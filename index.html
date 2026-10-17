@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G10 Macro & Cross-Asset FX Analytics Platform | Trading Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Live Cross-Asset Ticker Bar -->
+  <div class="ticker-strip" id="ticker-strip">
+    <div class="ticker-content" id="ticker-content">
+      <!-- Populated via API -->
+      <span class="ticker-loading">Loading real-time cross-asset data from backend...</span>
+    </div>
+  </div>
+
+  <!-- Header Bar -->
+  <header class="terminal-header">
+    <div class="header-left">
+      <div class="terminal-badge">INSTITUTIONAL DESK TERMINAL // FULL-STACK API</div>
+      <h1 class="terminal-title">G10 Macro & Cross-Asset FX Platform</h1>
+      <span class="sub-label">Currencies &bull; Precious Metals (XAU/XAG) &bull; Energy (WTI) &bull; Digital Assets (BTC/ETH) &bull; DXY</span>
+    </div>
+    <div class="header-right">
+      <div class="market-status-pill">
+        <span class="status-dot"></span>
+        <span id="session-clock">CONNECTING TO API...</span>
+      </div>
+      <div class="desk-stats">
+        <div class="stat-item">
+          <span class="stat-label">API BACKEND</span>
+          <span class="stat-val positive" id="api-status-badge">REST ONLINE (:3000)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">DXY BENCHMARK</span>
+          <span class="stat-val highlight" id="header-dxy-val">103.85 (+0.28%)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">GOLD (XAU)</span>
+          <span class="stat-val highlight" id="header-xau-val">$2,720.50</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Multi-View Navigation Tabs -->
+  <nav class="desk-nav">
+    <button class="nav-tab active" data-tab="tab-cross-assets">
+      <span class="tab-icon">🌐</span> Cross-Asset Market Matrix
+    </button>
+    <button class="nav-tab" data-tab="tab-macro-scorecard">
+      <span class="tab-icon">🏛️</span> G10 Sovereign Yields & Central Banks
+    </button>
+    <button class="nav-tab" data-tab="tab-correlations">
+      <span class="tab-icon">📊</span> Macro Correlation Matrix
+    </button>
+    <button class="nav-tab" data-tab="tab-risk-calculator">
+      <span class="tab-icon">🛡️</span> Multi-Asset Risk-Parity Engine
+    </button>
+    <button class="nav-tab" data-tab="tab-case-studies">
+      <span class="tab-icon">📑</span> Macro Cycles & Trade Research
+    </button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="dashboard-container">
+
+    <!-- ====================================================================
+         TAB 1: CROSS-ASSET MARKET MATRIX
+         ==================================================================== -->
+    <div class="tab-panel active" id="tab-cross-assets">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <button class="filter-btn active" data-category="ALL">All Assets (11)</button>
+          <button class="filter-btn" data-category="FX_MAJORS">FX Majors (5)</button>
+          <button class="filter-btn" data-category="METALS">Precious Metals (XAU/XAG)</button>
+          <button class="filter-btn" data-category="ENERGY">Energy (WTI/Brent)</button>
+          <button class="filter-btn" data-category="DIGITAL_ASSETS">Digital Assets (BTC/ETH)</button>
+          <button class="filter-btn" data-category="INDEX">Dollar Index (DXY)</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="asset-search-input" placeholder="Search symbol or driver (e.g. Gold, JPY, ETH)..." class="terminal-input">
+        </div>
+      </div>
+
+      <div class="cross-asset-grid" id="cross-asset-cards-container">
+        <!-- Injected via JavaScript from /api/assets -->
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         TAB 2: G10 MACRO SCORECARD & YIELD SPREADS
+         ==================================================================== -->
+    <div class="tab-panel" id="tab-macro-scorecard">
+      <div class="panel-layout-2col">
+        <!-- Left: Central Bank Table -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="section-tag">TABLE 01</span>
+              <h2>G10 Central Bank Monetary Policy & Yield Matrix</h2>
+            </div>
+            <button class="btn-refresh" id="btn-refresh-macro">Refresh API</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="macro-table" id="macro-scorecard-table">
+              <thead>
+                <tr>
+                  <th>Country & Bank</th>
+                  <th>Policy Rate</th>
+                  <th>2Y Sovereign Yield</th>
+                  <th>10Y Yield</th>
+                  <th>Headline CPI</th>
+                  <th>Real 2Y Yield</th>
+                  <th>Policy Stance</th>
+                  <th>Next Meeting</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="macro-table-body">
+                <!-- Populated via API -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="forward-guidance-box" id="guidance-box">
+            <div class="guidance-header">
+              <span class="guidance-title" id="guidance-title">Select a central bank row to view guidance</span>
+              <span class="close-guidance" id="btn-close-guidance">&times;</span>
+            </div>
+            <p class="guidance-text" id="guidance-text">Click any bank in the scorecard above to review their latest statement excerpt, forward guidance posture, and meeting catalysts.</p>
+          </div>
+        </section>
+
+        <!-- Right: 2Y Yield Spread Analyzer -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="section-tag">ENGINE 02</span>
+              <h2>2-Year Sovereign Yield Spread & Carry Engine</h2>
+            </div>
+          </div>
+
+          <div class="pair-selector-row">
+            <div class="form-group">
+              <label for="select-spread-base">Base Currency:</label>
+              <select id="select-spread-base" class="terminal-select">
+                <option value="USD" selected>USD (Federal Reserve)</option>
+                <option value="EUR">EUR (ECB)</option>
+                <option value="GBP">GBP (Bank of England)</option>
+                <option value="AUD">AUD (RBA)</option>
+                <option value="CAD">CAD (Bank of Canada)</option>
+                <option value="CHF">CHF (SNB)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="select-spread-quote">Quote / Funding Currency:</label>
+              <select id="select-spread-quote" class="terminal-select">
+                <option value="JPY" selected>JPY (Bank of Japan)</option>
+                <option value="CHF">CHF (Swiss National Bank)</option>
+                <option value="USD">USD (Federal Reserve)</option>
+                <option value="EUR">EUR (ECB)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <span class="kpi-title">2Y Yield Spread</span>
+              <span class="kpi-value highlight" id="kpi-2y-spread">+353 bps</span>
+              <span class="kpi-sub" id="kpi-2y-details">USD 2Y (4.15%) - JPY 2Y (0.62%)</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Real Yield Spread</span>
+              <span class="kpi-value" id="kpi-real-spread">+333 bps</span>
+              <span class="kpi-sub" id="kpi-real-details">USD Real (1.55%) - JPY Real (-1.78%)</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Stance Divergence</span>
+              <span class="kpi-value" id="kpi-stance-div">-2 pts</span>
+              <span class="kpi-sub" id="kpi-stance-details">Fed (+1) vs BoJ (+3)</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Carry Trade Incentive</span>
+              <span class="kpi-value positive" id="kpi-carry-incentive">HIGH POSITIVE</span>
+              <span class="kpi-sub">Overnight swap positive</span>
+            </div>
+          </div>
+
+          <div class="desk-signal-card" id="desk-signal-card">
+            <div class="signal-badge" id="signal-badge">STRONG LONG CARRY</div>
+            <div class="signal-details">
+              <div class="signal-headline" id="signal-headline">Hold Long USD / Short JPY (Wide +353 bps Spread)</div>
+              <p class="signal-rationale" id="signal-rationale">
+                The massive +353 bps 2-year sovereign yield differential creates strong positive carry for holding USD against JPY. Watch BoJ intervention thresholds and rate check headlines.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         TAB 3: CROSS-ASSET MACRO CORRELATION MATRIX
+         ==================================================================== -->
+    <div class="tab-panel" id="tab-correlations">
+      <section class="card full-width">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="section-tag">MATRIX 03</span>
+            <h2>Cross-Asset Macro Correlation & Sensitivity Heatmap</h2>
+          </div>
+          <span class="info-pill">Computed over 180-Day Rolling Window</span>
+        </div>
+
+        <p class="section-desc">
+          How currencies, precious metals, energy, and digital assets correlate with US 2-Year yields, US 10-Year Real yields, and the US Dollar Index (DXY). Green indicates positive correlation (+1.0), Red indicates negative correlation (-1.0).
+        </p>
+
+        <div class="table-responsive">
+          <table class="correlation-table" id="correlation-matrix-table">
+            <!-- Injected via JavaScript from /api/correlations -->
+          </table>
+        </div>
+
+        <div class="correlation-insights-grid">
+          <div class="insight-box">
+            <div class="insight-title">🥇 Gold (XAU/USD) vs. US 10Y Real Yield (-0.84)</div>
+            <p>Gold is the purest zero-yielding physical store of value. When US real yields fall, the opportunity cost of holding non-yielding bullion collapses, sparking institutional gold rallies.</p>
+          </div>
+          <div class="insight-box">
+            <div class="insight-title">⚡ Bitcoin (BTC/USD) & Ethereum (ETH/USD) vs. DXY (-0.72)</div>
+            <p>Digital assets trade as high-beta global liquidity proxies. Dollar weakness (declining DXY) and expanding central bank balance sheets correlate strongly with crypto expansion phases.</p>
+          </div>
+          <div class="insight-box">
+            <div class="insight-title">🛢️ WTI Crude Oil vs. USD/CAD (-0.68)</div>
+            <p>Canada is a top net energy exporter to the US. Rising crude prices boost Canada's terms-of-trade and currency reserves, driving USD/CAD lower (strengthening CAD).</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         TAB 4: MULTI-ASSET RISK-PARITY & SIZING ENGINE
+         ==================================================================== -->
+    <div class="tab-panel" id="tab-risk-calculator">
+      <div class="panel-layout-2col">
+        <!-- Input Form -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="section-tag">ENGINE 04</span>
+              <h2>Cross-Asset Risk-Parity & Volatility Sizing (API Powered)</h2>
+            </div>
+            <span class="badge-risk">BACKEND VALIDATED</span>
+          </div>
+
+          <div class="calculator-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="calc-select-asset">Select Target Asset:</label>
+                <select id="calc-select-asset" class="terminal-select">
+                  <optgroup label="Foreign Exchange (FX)">
+                    <option value="USDJPY" selected>USD/JPY (US Dollar / Japanese Yen)</option>
+                    <option value="EURUSD">EUR/USD (Euro / US Dollar)</option>
+                    <option value="GBPUSD">GBP/USD (British Pound / US Dollar)</option>
+                    <option value="AUDUSD">AUD/USD (Australian Dollar / US Dollar)</option>
+                    <option value="USDCAD">USD/CAD (US Dollar / Canadian Dollar)</option>
+                  </optgroup>
+                  <optgroup label="Precious Metals (Bullion FX)">
+                    <option value="XAUUSD">XAU/USD (Spot Gold - 100 oz)</option>
+                    <option value="XAGUSD">XAG/USD (Spot Silver - 5,000 oz)</option>
+                  </optgroup>
+                  <optgroup label="Energy & Petro-Commodities">
+                    <option value="WTIUSD">WTI/USD (Crude Oil - 1,000 bbl)</option>
+                  </optgroup>
+                  <optgroup label="Digital Assets (Crypto Macro)">
+                    <option value="BTCUSD">BTC/USD (Bitcoin - 1 BTC)</option>
+                    <option value="ETHUSD">ETH/USD (Ethereum - 1 ETH)</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="calc-account-capital">Account Allocated Capital ($):</label>
+                <input type="number" id="calc-account-capital" value="50000" step="5000" class="terminal-input">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="calc-risk-pct">Max Risk Per Setup (%):</label>
+                <input type="number" id="calc-risk-pct" value="1.0" step="0.25" min="0.25" max="3.0" class="terminal-input">
+              </div>
+              <div class="form-group">
+                <label for="calc-atr-mult">Stop Distance (ATR Multiple):</label>
+                <select id="calc-atr-mult" class="terminal-select">
+                  <option value="1.0">1.0 × ATR (Tight Scalp)</option>
+                  <option value="1.5" selected>1.5 × ATR (Standard Swing)</option>
+                  <option value="2.0">2.0 × ATR (Macro Wide)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="calc-rr-ratio">Target Risk-to-Reward (R:R):</label>
+                <select id="calc-rr-ratio" class="terminal-select">
+                  <option value="1.5">1 : 1.5 Minimum</option>
+                  <option value="2.0" selected>1 : 2.0 Desk Standard</option>
+                  <option value="2.5">1 : 2.5 Macro Runner</option>
+                  <option value="3.0">1 : 3.0 Trend Rider</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="calc-custom-atr">14-Day ATR (Auto-Loaded):</label>
+                <input type="number" id="calc-custom-atr" value="128" step="0.1" class="terminal-input">
+              </div>
+            </div>
+
+            <button class="btn-calculate" id="btn-run-calculation">Calculate Risk-Parity Allocation</button>
+          </div>
+        </section>
+
+        <!-- Output Display -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="section-tag">API RESULT</span>
+              <h2>Desk Allocation & Execution Output</h2>
+            </div>
+            <span class="max-risk-badge" id="calc-display-risk">$500.00 (1.00% Risk)</span>
+          </div>
+
+          <div class="sizing-results-card">
+            <div class="results-grid">
+              <div class="res-box primary">
+                <span class="res-label">POSITION SIZING ALLOCATION</span>
+                <span class="res-num" id="calc-res-lots">0.40 Standard Lots</span>
+                <span class="res-sub" id="calc-res-notional">Notional: ~$39,698</span>
+              </div>
+              <div class="res-box">
+                <span class="res-label">ASSET SPOT PRICE</span>
+                <span class="res-num highlight" id="calc-res-spot">152.4000</span>
+                <span class="res-sub" id="calc-res-category">Major FX Pair</span>
+              </div>
+              <div class="res-box">
+                <span class="res-label">STOP LOSS DISTANCE</span>
+                <span class="res-num text-danger" id="calc-res-stop-dist">192.0 pips</span>
+                <span class="res-sub" id="calc-res-stop-price">Stop: 150.4800</span>
+              </div>
+              <div class="res-box">
+                <span class="res-label">PROFIT TARGET (R:R)</span>
+                <span class="res-num text-success" id="calc-res-target-dist">384.0 pips</span>
+                <span class="res-sub" id="calc-res-target-price">Target: 156.2400 (+$1,000)</span>
+              </div>
+            </div>
+
+            <div class="protocol-box" id="calc-res-protocol">
+              <strong>Trailing Stop Mandate:</strong> Move stop loss to breakeven once price advances +1.5R. Trail remaining position behind the 20-day Exponential Moving Average (EMA).
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         TAB 5: MACRO RESEARCH & HISTORICAL CYCLES
+         ==================================================================== -->
+    <div class="tab-panel" id="tab-case-studies">
+      <!-- Historical Carry Cycle Simulator -->
+      <section class="card full-width" id="simulator-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="section-tag">CASE STUDY 01</span>
+            <h2>Historical Carry Cycle Simulator: The USD/JPY Phenomenon (2022–2024)</h2>
+          </div>
+          <div class="cycle-controls">
+            <button class="cycle-btn" id="btn-prev-cycle">&larr; Previous Stage</button>
+            <span class="cycle-step-display" id="cycle-step-display">Stage 1 of 8: Fed Initial Hike Cycle</span>
+            <button class="cycle-btn" id="btn-next-cycle">Next Stage &rarr;</button>
+          </div>
+        </div>
+
+        <div class="simulator-layout">
+          <div class="chart-container">
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-color spread-color"></span> 2Y Yield Spread (bps)</span>
+              <span class="legend-item"><span class="legend-color spot-color"></span> USD/JPY Spot Price</span>
+              <span class="legend-item"><span class="legend-color intervention-color"></span> BoJ / MoF Intervention</span>
+            </div>
+            <canvas id="historical-chart" width="800" height="280"></canvas>
+          </div>
+
+          <div class="cycle-details-card">
+            <div class="cycle-badge" id="sim-period-badge">2022-Q1</div>
+            <h3 class="cycle-regime-title" id="sim-regime-title">Fed Initial Hike Cycle</h3>
+
+            <div class="cycle-metric-row">
+              <div>
+                <span class="c-label">US 2Y Yield</span>
+                <span class="c-val" id="sim-us2y">1.60%</span>
+              </div>
+              <div>
+                <span class="c-label">Japan 2Y Yield</span>
+                <span class="c-val" id="sim-jp2y">-0.04%</span>
+              </div>
+              <div>
+                <span class="c-label">Spread</span>
+                <span class="c-val highlight" id="sim-spread">+164 bps</span>
+              </div>
+              <div>
+                <span class="c-label">USD/JPY Spot</span>
+                <span class="c-val" id="sim-spot">115.50</span>
+              </div>
+            </div>
+
+            <p class="cycle-explanation" id="sim-explanation">
+              The Federal Reserve initiates its first interest rate hike from 0.25%, while BoJ Governor Kuroda reaffirms negative interest rates and strict 10-year Yield Curve Control (YCC).
+            </p>
+
+            <div class="cycle-takeaway" id="sim-takeaway">
+              <strong>Desk Lesson:</strong> Early in a monetary policy divergence, currency trends exhibit high persistence. Do not try to pick the top when yield spreads are accelerating.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Institutional Macro Rationale -->
+      <section class="card full-width">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="section-tag">ANALYTICAL FRAMEWORK</span>
+            <h2>Macroeconomic Principles & Risk Management Mechanics</h2>
+          </div>
+        </div>
+
+        <div class="qa-grid">
+          <div class="qa-card">
+            <div class="qa-q">Principle 01: 2-Year Sovereign Yield Duration vs. 10-Year Transmission</div>
+            <div class="qa-a">
+              The 2-year sovereign yield directly prices central bank policy decisions over the forward 24-month horizon. Because foreign exchange rates function as interest rate arbitrage mechanisms, 2-year yield spreads demonstrate superior empirical correlation with spot currency moves compared to 10-year yields, which are heavily distorted by fiscal debt supply and term premiums.
+            </div>
+          </div>
+          <div class="qa-card">
+            <div class="qa-q">Principle 02: Negative Skewness & Asymmetric Carry Unwind Mechanics</div>
+            <div class="qa-a">
+              Carry trade portfolios display positive expected yield during low-volatility regimes, but exhibit pronounced negative skewness. Violent carry liquidations occur when: (1) 2-year sovereign yield spreads compress sharply due to monetary policy shifts, or (2) surges in global FX implied volatility force leveraged funds into concurrent margin-call rushes to buy back funding currencies.
+            </div>
+          </div>
+          <div class="qa-card">
+            <div class="qa-q">Principle 03: Risk-Parity Volatility Normalization (14-Day ATR Framework)</div>
+            <div class="qa-a">
+              Fixed contract lot sizing imposes uneven capital risk across currency pairs of differing volatility regimes. Sizing by the reciprocal of the 14-day Average True Range (ATR) normalizes dollar loss to a uniform 1.0% risk budget per setup, decoupling portfolio survivability from market volatility shocks and preserving long-term risk asymmetry.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="terminal-footer">
+    <span>G10 MACRO & CROSS-ASSET FX ANALYTICS PLATFORM // FULL-STACK API</span>
+    <span>CURRENCIES &bull; GOLD (XAU) &bull; SILVER (XAG) &bull; CRUDE (WTI) &bull; CRYPTO (BTC/ETH)</span>
+    <span>PROPRIETARY TRADING RESEARCH & RISK SUITE</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

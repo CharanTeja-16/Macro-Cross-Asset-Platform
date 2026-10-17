@@ -1,0 +1,25 @@
+{
+  "name": "g10-macro-cross-asset-platform",
+  "version": "2.4.0",
+  "description": "G10 Macro & Cross-Asset FX Analytics Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "keywords": [
+    "forex",
+    "gold",
+    "crypto",
+    "macro",
+    "trading",
+    "carry-trade",
+    "risk-parity"
+  ],
+  "author": "",
+  "license": "MIT"
+}
